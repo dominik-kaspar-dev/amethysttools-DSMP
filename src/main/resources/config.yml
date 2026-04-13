@@ -1,0 +1,44 @@
+# DO NOT CHANGE THE CONFIG VERSION. IT IS USED FOR CHECKING IF THE CONFIG IS OUTDATED AND NEEDS TO BE REPLACED.
+
+config-version: 1.1.0
+
+items:
+  # AMETHYST PICKAXE
+  amethyst_pickaxe:
+    aliases:
+      - pickaxe
+      - amethystpickaxe
+      - amethyst_pickaxe
+    # Display settings
+    material: NETHERITE_PICKAXE
+    name: "&dAmethyst Pickaxe"
+    lore:
+      - "&7Mines in a configurable area"
+      - "&7Expires in: &e%time%"
+    unbreakable: false
+    glow: true
+    # Enchantments (format: ENCHANTMENT: level)
+    enchantments:
+      EFFICIENCY: 5
+      UNBREAKING: 3
+      SILKTOUCH: 1
+
+# Mining settings (default: 3x3 area (radius 1) and 1 block depth)
+mining:
+  radius: 1
+  depth: 1
+
+# Expiry settings (default: 3 days)
+expiry:
+  days: 3
+
+blocked-materials:
+  - BEDROCK
+  - SPAWNER
+  - OBSIDIAN
+  - CRYING_OBSIDIAN
+  - END_PORTAL_FRAME
+  - END_PORTAL
+  - END_GATEWAY
+  - NETHER_PORTAL
+  - REINFORCED_DEEPSLATE

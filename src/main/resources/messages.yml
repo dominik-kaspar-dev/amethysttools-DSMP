@@ -1,0 +1,12 @@
+messages-version: 1.1.0
+
+messages:
+  no-permission: "&cYou do not have permission."
+  player-only: "&cOnly players can use this command."
+  usage: "&eUsage: /at <give|reload>"
+  invalid-player: "&cPlayer not found."
+  invalid-item: "&cUnknown item. Use one of: %items%"
+  gave-item: "&aGave %amount%x Amethyst Pickaxe to %player%."
+  received-item: "&aYou received %amount%x Amethyst Pickaxe."
+  reloaded: "&aAmethystTools config and messages reloaded."
+  tool-expired: "&cYour Amethyst Pickaxe has expired."
