@@ -1,6 +1,6 @@
 # DO NOT CHANGE THE CONFIG VERSION. IT IS USED FOR CHECKING IF THE CONFIG IS OUTDATED AND NEEDS TO BE REPLACED.
 
-config-version: 1.1.0
+config-version: 1.2.0
 
 items:
   # AMETHYST PICKAXE
@@ -22,6 +22,24 @@ items:
       EFFICIENCY: 5
       UNBREAKING: 3
       SILKTOUCH: 1
+
+  # AMETHYST AXE
+  amethyst_axe:
+    aliases:
+      - axe
+      - amethystaxe
+      - amethyst_axe
+    material: NETHERITE_AXE
+    name: "&dAmethyst Axe"
+    lore:
+      - "&7Fells the main tree trunk"
+      - "&7Maximum: &e128 logs"
+      - "&7Expires in: &e%time%"
+    unbreakable: false
+    glow: true
+    enchantments:
+      EFFICIENCY: 5
+      UNBREAKING: 3
 
 # Mining settings (default: 3x3 area (radius 1) and 1 block depth)
 mining:

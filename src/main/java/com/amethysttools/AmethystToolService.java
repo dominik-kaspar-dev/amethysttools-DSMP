@@ -30,12 +30,14 @@ public class AmethystToolService {
     private final AmethystToolsPlugin plugin;
     private final NamespacedKey toolKey;
     private final NamespacedKey expiresAtKey;
+    private final NamespacedKey itemTypeKey;
     private final Set<Material> blockedMaterials = new HashSet<>();
 
-    public AmethystToolService(AmethystToolsPlugin plugin, NamespacedKey toolKey, NamespacedKey expiresAtKey) {
+    public AmethystToolService(AmethystToolsPlugin plugin, NamespacedKey toolKey, NamespacedKey expiresAtKey, NamespacedKey itemTypeKey) {
         this.plugin = plugin;
         this.toolKey = toolKey;
         this.expiresAtKey = expiresAtKey;
+        this.itemTypeKey = itemTypeKey;
         reloadBlockedMaterials();
     }
 
@@ -87,6 +89,7 @@ public class AmethystToolService {
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
         pdc.set(toolKey, PersistentDataType.BYTE, (byte) 1);
         pdc.set(expiresAtKey, PersistentDataType.LONG, expiresAt);
+        pdc.set(itemTypeKey, PersistentDataType.STRING, itemKey);
 
         meta.lore(buildLore(expiresAt, itemSection));
         item.setItemMeta(meta);
@@ -166,6 +169,38 @@ public class AmethystToolService {
     public boolean isExpired(ItemStack item) {
         long expiresAt = getExpiresAt(item);
         return expiresAt > 0 && Instant.now().toEpochMilli() >= expiresAt;
+    }
+
+    public String getToolItemKey(ItemStack item) {
+        if (!isAmethystTool(item)) {
+            return null;
+        }
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) {
+            return null;
+        }
+
+        String stored = meta.getPersistentDataContainer().get(itemTypeKey, PersistentDataType.STRING);
+        if (stored != null && !stored.isBlank()) {
+            return stored;
+        }
+
+        return resolveItemKey("amethyst_pickaxe");
+    }
+
+    public boolean isToolItem(ItemStack item, String expectedKey) {
+        String actualKey = getToolItemKey(item);
+        if (actualKey == null || expectedKey == null || expectedKey.isBlank()) {
+            return false;
+        }
+
+        String resolvedExpected = resolveItemKey(expectedKey);
+        if (resolvedExpected == null) {
+            resolvedExpected = expectedKey;
+        }
+
+        return normalizeKey(actualKey).equals(normalizeKey(resolvedExpected));
     }
 
     public long getExpiresAt(ItemStack item) {

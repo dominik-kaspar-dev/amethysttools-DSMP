@@ -1,4 +1,4 @@
-messages-version: 1.1.0
+messages-version: 1.2.0
 
 messages:
   no-permission: "&cYou do not have permission."
@@ -6,7 +6,7 @@ messages:
   usage: "&eUsage: /at <give|reload>"
   invalid-player: "&cPlayer not found."
   invalid-item: "&cUnknown item. Use one of: %items%"
-  gave-item: "&aGave %amount%x Amethyst Pickaxe to %player%."
-  received-item: "&aYou received %amount%x Amethyst Pickaxe."
+  gave-item: "&aGave %amount%x Amethyst tool to %player%."
+  received-item: "&aYou received %amount%x Amethyst tool."
   reloaded: "&aAmethystTools config and messages reloaded."
-  tool-expired: "&cYour Amethyst Pickaxe has expired."
+  tool-expired: "&cYour Amethyst tool has expired."

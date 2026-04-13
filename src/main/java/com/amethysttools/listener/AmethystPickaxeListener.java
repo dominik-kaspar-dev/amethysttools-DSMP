@@ -13,10 +13,15 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayDeque;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Queue;
 import java.util.Set;
 
 public class AmethystPickaxeListener implements Listener {
+
+    private static final int MAX_TREE_BLOCKS = 128;
 
     private final AmethystToolsPlugin plugin;
     private final AmethystToolService toolService;
@@ -54,6 +59,11 @@ public class AmethystPickaxeListener implements Listener {
             return;
         }
 
+        if (toolService.isToolItem(tool, "amethyst_axe")) {
+            handleAxeBreak(origin, tool);
+            return;
+        }
+
         int radius = toolService.getRadius();
         int depth = toolService.getDepth();
         BlockFace face = player.getTargetBlockFace(6);
@@ -66,6 +76,22 @@ public class AmethystPickaxeListener implements Listener {
 
         for (Block block : extraBlocks) {
             if (block.getType() == Material.AIR || toolService.isBlocked(block.getType())) {
+                continue;
+            }
+            block.breakNaturally(tool);
+        }
+    }
+
+    private void handleAxeBreak(Block origin, ItemStack tool) {
+        if (!isTreeLog(origin.getType())) {
+            return;
+        }
+
+        Set<Block> treeBlocks = collectMainTrunkBlocks(origin);
+        treeBlocks.remove(origin);
+
+        for (Block block : treeBlocks) {
+            if (block.getType() == Material.AIR) {
                 continue;
             }
             block.breakNaturally(tool);
@@ -115,6 +141,59 @@ public class AmethystPickaxeListener implements Listener {
         }
 
         return result;
+    }
+
+    private Set<Block> collectMainTrunkBlocks(Block origin) {
+        Set<Block> result = new LinkedHashSet<>();
+        Queue<Block> queue = new ArrayDeque<>();
+
+        Material trunkType = origin.getType();
+        queue.add(origin);
+
+        while (!queue.isEmpty() && result.size() < MAX_TREE_BLOCKS) {
+            Block current = queue.poll();
+            if (result.contains(current) || current.getType() != trunkType) {
+                continue;
+            }
+
+            result.add(current);
+            addVertical(queue, result, current, trunkType, BlockFace.UP);
+            addVertical(queue, result, current, trunkType, BlockFace.DOWN);
+
+            for (BlockFace face : new BlockFace[]{BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST}) {
+                Block side = current.getRelative(face);
+                if (result.contains(side) || side.getType() != trunkType) {
+                    continue;
+                }
+
+                if (!hasVerticalTrunkConnection(side, trunkType)) {
+                    continue;
+                }
+
+                queue.add(side);
+            }
+        }
+
+        return result;
+    }
+
+    private void addVertical(Queue<Block> queue, Set<Block> visited, Block start, Material type, BlockFace direction) {
+        Block next = start.getRelative(direction);
+        while (next.getType() == type && visited.size() + queue.size() < MAX_TREE_BLOCKS) {
+            if (!visited.contains(next)) {
+                queue.add(next);
+            }
+            next = next.getRelative(direction);
+        }
+    }
+
+    private boolean hasVerticalTrunkConnection(Block block, Material type) {
+        return block.getRelative(BlockFace.UP).getType() == type
+                || block.getRelative(BlockFace.DOWN).getType() == type;
+    }
+
+    private boolean isTreeLog(Material material) {
+        return material.name().endsWith("_LOG");
     }
 
     private BlockFace getFallbackFace(Player player) {

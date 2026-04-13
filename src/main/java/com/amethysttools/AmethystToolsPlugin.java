@@ -18,6 +18,7 @@ public final class AmethystToolsPlugin extends JavaPlugin {
 
     private NamespacedKey toolKey;
     private NamespacedKey expiresAtKey;
+    private NamespacedKey itemTypeKey;
     private AmethystToolService toolService;
     private BukkitTask loreTask;
     private File messagesFile;
@@ -32,7 +33,8 @@ public final class AmethystToolsPlugin extends JavaPlugin {
 
         this.toolKey = new NamespacedKey(this, "amethyst_tool");
         this.expiresAtKey = new NamespacedKey(this, "expires_at");
-        this.toolService = new AmethystToolService(this, toolKey, expiresAtKey);
+        this.itemTypeKey = new NamespacedKey(this, "tool_item_key");
+        this.toolService = new AmethystToolService(this, toolKey, expiresAtKey, itemTypeKey);
 
         PluginCommand command = getCommand("amethysttools");
         if (command != null) {
