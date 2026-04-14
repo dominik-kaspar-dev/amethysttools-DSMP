@@ -13,6 +13,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 public final class AmethystToolsPlugin extends JavaPlugin {
 
@@ -26,10 +29,7 @@ public final class AmethystToolsPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        saveDefaultConfig();
-        saveResource("messages.yml", false);
-        loadMessagesConfig();
-        validateConfigVersions();
+        ensureManagedFilesAreCurrent();
 
         this.toolKey = new NamespacedKey(this, "amethyst_tool");
         this.expiresAtKey = new NamespacedKey(this, "expires_at");
@@ -55,9 +55,7 @@ public final class AmethystToolsPlugin extends JavaPlugin {
     }
 
     public void reloadPluginConfig() {
-        reloadConfig();
-        loadMessagesConfig();
-        validateConfigVersions();
+        ensureManagedFilesAreCurrent();
         toolService.reloadBlockedMaterials();
     }
 
@@ -73,25 +71,72 @@ public final class AmethystToolsPlugin extends JavaPlugin {
         messagesConfig = YamlConfiguration.loadConfiguration(messagesFile);
     }
 
-    private void validateConfigVersions() {
-        String pluginVersion = getDescription().getVersion();
-        checkVersion("config.yml", "config-version", getConfig().getString("config-version", ""), pluginVersion);
-        checkVersion("messages.yml", "messages-version", getMessagesConfig().getString("messages-version", ""), pluginVersion);
+    private void ensureManagedFilesAreCurrent() {
+        String expectedVersion = getDescription().getVersion();
+        ensureVersionedResource("config.yml", "config-version", expectedVersion);
+        ensureVersionedResource("messages.yml", "messages-version", expectedVersion);
+        reloadConfig();
+        loadMessagesConfig();
     }
 
-    private void checkVersion(String fileName, String key, String currentVersion, String expectedVersion) {
-        if (currentVersion == null || currentVersion.isBlank()) {
-            getLogger().warning(fileName + " is missing " + key + ". Expected: " + expectedVersion + ".");
-            getLogger().warning("Please merge new keys from the latest default " + fileName + ".");
+    private void ensureVersionedResource(String fileName, String versionKey, String expectedVersion) {
+        File targetFile = new File(getDataFolder(), fileName);
+        if (!targetFile.exists()) {
+            saveResource(fileName, false);
             return;
         }
 
-        if (currentVersion.equals(expectedVersion)) {
+        FileConfiguration currentConfig = YamlConfiguration.loadConfiguration(targetFile);
+        String currentVersion = currentConfig.getString(versionKey, "");
+        if (expectedVersion.equals(currentVersion)) {
             return;
         }
 
-        getLogger().warning(fileName + " version mismatch (" + key + "=" + currentVersion + ", expected " + expectedVersion + ").");
-        getLogger().warning("Please merge new keys from the latest default " + fileName + ".");
+        String fileVersionForName = normalizeVersionForFilename(currentVersion);
+        File backupFile = createBackupFile(fileName, fileVersionForName);
+
+        try {
+            Files.move(targetFile.toPath(), backupFile.toPath());
+        } catch (IOException ex) {
+            getLogger().severe("Failed to archive " + fileName + " before regeneration: " + ex.getMessage());
+            return;
+        }
+
+        try {
+            saveResource(fileName, false);
+            getLogger().warning(fileName + " version mismatch (" + versionKey + "=" + currentVersion + ", expected " + expectedVersion + ").");
+            getLogger().warning("Archived old file as " + backupFile.getName() + " and regenerated a new " + fileName + ".");
+        } catch (IllegalArgumentException ex) {
+            getLogger().severe("Failed to regenerate " + fileName + ": " + ex.getMessage());
+            try {
+                Files.move(backupFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                getLogger().warning("Restored original " + fileName + " from backup because regeneration failed.");
+            } catch (IOException restoreEx) {
+                getLogger().severe("Failed to restore original " + fileName + ": " + restoreEx.getMessage());
+            }
+        }
+    }
+
+    private File createBackupFile(String fileName, String fileVersionForName) {
+        String baseName = fileName.endsWith(".yml")
+                ? fileName.substring(0, fileName.length() - 4)
+                : fileName;
+
+        File backupFile = new File(getDataFolder(), "__old_" + baseName + "_" + fileVersionForName + "__.yml");
+        int duplicateIndex = 1;
+        while (backupFile.exists()) {
+            backupFile = new File(getDataFolder(), "__old_" + baseName + "_" + fileVersionForName + "__" + duplicateIndex + ".yml");
+            duplicateIndex++;
+        }
+
+        return backupFile;
+    }
+
+    private String normalizeVersionForFilename(String version) {
+        if (version == null || version.isBlank()) {
+            return "unknown";
+        }
+        return version.replaceAll("[^a-zA-Z0-9._-]", "_");
     }
 
     private void startLoreUpdateTask() {
