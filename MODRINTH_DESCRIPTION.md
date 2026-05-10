@@ -11,12 +11,14 @@ It is built for server owners who want powerful utility tools with safe defaults
 - Automatic removal of expired tools
 - Per-item config system for easy future tool additions
 - Block protection via configurable blocked-materials list
+- Area-mining exclusions via `mining.excluded-materials`
 - Separate messages.yml for fully editable text
 - Config/message version checks to help with safe updates
 
 ## Features
 
 - 3x3 style mining by default (`radius: 1`, `depth: 1`)
+- Blocks in `mining.excluded-materials` are only mineable directly (not as 3x3 side-breaks)
 - Expiry system (`expiry.days`) with `%time%` placeholder in lore
 - Dynamic `/at give` item input from config aliases
 - Admin reload command for config and messages
@@ -62,13 +64,16 @@ Add more tools by creating new keys under `items` and giving each key aliases.
 
 - BEDROCK
 - SPAWNER
-- OBSIDIAN
 - CRYING_OBSIDIAN
 - END_PORTAL_FRAME
 - END_PORTAL
 - END_GATEWAY
 - NETHER_PORTAL
 - REINFORCED_DEEPSLATE
+
+## Area-Mining Exclusions (Default)
+
+- OBSIDIAN
 
 ## Messages
 

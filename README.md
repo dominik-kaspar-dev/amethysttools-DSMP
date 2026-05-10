@@ -1,10 +1,11 @@
 # AmethystTools (Paper 1.21.x)
 
-AmethystTools adds a custom Amethyst Pickaxe with configurable mining behavior.
+AmethystTools adds configurable custom tools for Paper 1.21.x, including area mining, tree-felling, and per-item settings.
 
 ## Features
 
 - Configurable area mining (`radius` and `depth`)
+- Optional area-mining exclusions (`mining.excluded-materials`) so specific blocks are only mineable directly
 - Pickaxe expiry timer with auto-updating lore
 - Automatic removal when expired
 - Configurable blocked materials
@@ -34,7 +35,7 @@ Both configuration files are versioned:
 - `config.yml` uses `config-version`
 - `messages.yml` uses `messages-version`
 
-Both values should match the plugin version from `plugin.yml` (example: `1.1.0`).
+Both values should match the plugin version from `plugin.yml` (example: `1.2.2`).
 
 On startup and on `/at reload`, the plugin checks these values and logs a warning if a file is outdated. This makes upgrades safer and makes it clear when you need to merge new keys.
 
@@ -47,8 +48,9 @@ On startup and on `/at reload`, the plugin checks these values and logs a warnin
 - `items.<item_key>.aliases` - names accepted by `/at give <player> <item>`
 - `items.<item_key>.enchantments` - map of enchantment to level
 - `blocked-materials` - materials that can never be mined by the tool
+- `mining.excluded-materials` - materials not broken by area-mining side effects (but still mineable directly)
 
-Default blocked list includes: `BEDROCK`, `SPAWNER`, `OBSIDIAN`, `CRYING_OBSIDIAN`, `END_PORTAL_FRAME`, `END_PORTAL`, `END_GATEWAY`, `NETHER_PORTAL`, `REINFORCED_DEEPSLATE`.
+Default blocked list includes: `BEDROCK`, `SPAWNER`, `CRYING_OBSIDIAN`, `END_PORTAL_FRAME`, `END_PORTAL`, `END_GATEWAY`, `NETHER_PORTAL`, `REINFORCED_DEEPSLATE`.
 
 ## Messages Config
 
@@ -102,19 +104,19 @@ mvn clean package
 
 Output jar:
 
-- `target/amethysttools-1.1.0.jar`
+- `target/amethysttools-1.2.2.jar`
 
 ## Install
 
 1. Stop your Paper server.
-2. Put `target/amethysttools-1.1.0.jar` into server `plugins/`.
+2. Put `target/amethysttools-1.2.2.jar` into server `plugins/`.
 3. Start server.
 4. Edit `plugins/AmethystTools/config.yml` and `plugins/AmethystTools/messages.yml`.
 5. Run `/amethysttools reload` after changes.
 
 ## Version Update Checklist (for new releases)
 
-When updating plugin version (example: `1.1.0` -> `1.1.1`), use this checklist:
+When updating plugin version (example: `1.2.2` -> `1.2.3`), use this checklist:
 
 1. Update `<version>` in `pom.xml`.
 2. Update `version` in `src/main/resources/plugin.yml`.

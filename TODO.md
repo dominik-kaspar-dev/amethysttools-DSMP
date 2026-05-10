@@ -1,2 +1,0 @@
-- BUG when mining a special spawner with amethyst pickaxe it drops the spawner but spawns a new one in the same place, but normal not special.
-- make a new category for blocks that can be broken but will not do a 3x3 and cannot be broken by mining other blocks next to it
