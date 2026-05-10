@@ -1,6 +1,6 @@
 # DO NOT CHANGE THE CONFIG VERSION. IT IS USED FOR CHECKING IF THE CONFIG IS OUTDATED AND NEEDS TO BE REPLACED.
 
-config-version: 1.2.1
+config-version: 1.2.2
 
 items:
   # AMETHYST PICKAXE
@@ -45,6 +45,10 @@ items:
 mining:
   radius: 1
   depth: 1
+  # Materials listed here will NOT be broken by the area-mining effect
+  # when a neighboring block is mined. They can still be mined directly.
+  excluded-materials:
+    - OBSIDIAN
 
 # Expiry settings (default: 3 days)
 expiry:
@@ -53,7 +57,6 @@ expiry:
 blocked-materials:
   - BEDROCK
   - SPAWNER
-  - OBSIDIAN
   - CRYING_OBSIDIAN
   - END_PORTAL_FRAME
   - END_PORTAL

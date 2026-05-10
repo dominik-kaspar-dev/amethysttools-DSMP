@@ -75,7 +75,7 @@ public class AmethystPickaxeListener implements Listener {
         extraBlocks.remove(origin);
 
         for (Block block : extraBlocks) {
-            if (block.getType() == Material.AIR || toolService.isBlocked(block.getType())) {
+            if (block.getType() == Material.AIR || toolService.isBlocked(block.getType()) || toolService.isExcludedFromArea(block.getType())) {
                 continue;
             }
             block.breakNaturally(tool);

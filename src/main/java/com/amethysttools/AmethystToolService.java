@@ -32,6 +32,7 @@ public class AmethystToolService {
     private final NamespacedKey expiresAtKey;
     private final NamespacedKey itemTypeKey;
     private final Set<Material> blockedMaterials = new HashSet<>();
+    private final Set<Material> excludedFromArea = new HashSet<>();
 
     public AmethystToolService(AmethystToolsPlugin plugin, NamespacedKey toolKey, NamespacedKey expiresAtKey, NamespacedKey itemTypeKey) {
         this.plugin = plugin;
@@ -39,6 +40,7 @@ public class AmethystToolService {
         this.expiresAtKey = expiresAtKey;
         this.itemTypeKey = itemTypeKey;
         reloadBlockedMaterials();
+        reloadExcludedFromArea();
     }
 
     public void reloadBlockedMaterials() {
@@ -51,6 +53,22 @@ public class AmethystToolService {
                 plugin.getLogger().warning("Unknown material in blocked-materials: " + name);
             }
         }
+    }
+
+    public void reloadExcludedFromArea() {
+        excludedFromArea.clear();
+        for (String name : plugin.getConfig().getStringList("mining.excluded-materials")) {
+            Material material = Material.matchMaterial(name);
+            if (material != null) {
+                excludedFromArea.add(material);
+            } else {
+                plugin.getLogger().warning("Unknown material in mining.excluded-materials: " + name);
+            }
+        }
+    }
+
+    public boolean isExcludedFromArea(Material material) {
+        return excludedFromArea.contains(material);
     }
 
     public ItemStack createItem(String itemKey, int amount) {

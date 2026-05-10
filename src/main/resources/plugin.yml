@@ -1,5 +1,5 @@
 name: AmethystTools
-version: 1.2.1
+version: 1.2.2
 main: com.amethysttools.AmethystToolsPlugin
 api-version: "1.21.11"
 authors: [dominik-kaspar-dev]
