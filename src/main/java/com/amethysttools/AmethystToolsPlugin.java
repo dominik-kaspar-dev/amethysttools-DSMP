@@ -2,6 +2,7 @@ package com.amethysttools;
 
 import com.amethysttools.command.AmethystToolsCommand;
 import com.amethysttools.listener.AmethystPickaxeListener;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.PluginCommand;
@@ -19,6 +20,8 @@ import java.nio.file.StandardCopyOption;
 
 public final class AmethystToolsPlugin extends JavaPlugin {
 
+    private static final int BSTATS_PLUGIN_ID = 31297;
+
     private NamespacedKey toolKey;
     private NamespacedKey expiresAtKey;
     private NamespacedKey itemTypeKey;
@@ -35,6 +38,8 @@ public final class AmethystToolsPlugin extends JavaPlugin {
         this.expiresAtKey = new NamespacedKey(this, "expires_at");
         this.itemTypeKey = new NamespacedKey(this, "tool_item_key");
         this.toolService = new AmethystToolService(this, toolKey, expiresAtKey, itemTypeKey);
+
+        new Metrics(this, BSTATS_PLUGIN_ID);
 
         PluginCommand command = getCommand("amethysttools");
         if (command != null) {
